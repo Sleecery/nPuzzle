@@ -48,7 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>DU1405.Class1</StartupObject>
+    <StartupObject>DU1405.Program2</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>E8FAD2AE42084E7E75D8252C32C911AB8E5E2E54</ManifestCertificateThumbprint>
@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="DelegatTest.cs" />
+    <Compile Include="Hokej.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
