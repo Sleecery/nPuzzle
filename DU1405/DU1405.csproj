@@ -48,7 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>DU1405.Program2</StartupObject>
+    <StartupObject>DU1405.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>E8FAD2AE42084E7E75D8252C32C911AB8E5E2E54</ManifestCertificateThumbprint>

@@ -6,200 +6,306 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-
 namespace DU1405
 {
     class RodneCislo1
     {
         public string RodneCislo { get; set; }
+        public bool Vyhovujuce { get; private set; }
+        public bool Muz { get; private set; }
+        public DateTime DatumNarodenia { get; private set; }
 
         public RodneCislo1(string rodneCislo)
         {
-            bool muz = false;
+            RodneCislo = rodneCislo;
             if (String.IsNullOrEmpty(rodneCislo))
             {
                 Console.WriteLine("daco nedobre");
                 return;
             }
-            Regex rx = new Regex(@"(?<year>[0-9]{2})(?<month>[0,1][0-9]|[5,6][0,9])(?<day>[0-3][0-9])/[0-9]{3,4}");
+            Regex rx = new Regex(@"([0-9]{2})([0,1][0-9]|[5,6][0-9])(?<day>[0-3][0-9])/[0-9]{3,4}");
             Match match = rx.Match(rodneCislo);
             if (match.Success)
             {
-                RodneCislo = rodneCislo;
-                long sum = 0;
                 string[] rc = rodneCislo.Split('/');
-
-                if (rc[1].Length == 4)
-                {
-                    sum += Convert.ToInt32(rc[0]);
-                    sum *= 10000;
-                    sum += Convert.ToInt32(rc[1]);
-                }
-                else
-                {
-                    sum += Convert.ToInt32(rc[0]) * 1000;
-                    sum += Convert.ToInt32(rc[1]);
-                }
-
-                if (sum % 11 != 0)
-                {
-                    Console.WriteLine("Nevyhovujuce rodne cislo, nie je delitelne 11");
-                    return;
-                }
                 int s = Convert.ToInt32(rc[0]) % 10000;
-
-                if (s > 12000)
+                if (!OverRodneCislo(rc))
                 {
-                    Console.WriteLine("zena");
-                }
-                else
-                {
-                    Console.WriteLine("muz");
-                    muz = true;
-                }
-                string dateString;
-                if ((Convert.ToInt32(rc[0][0]) - 48) > 2)
-                {
-                    dateString = "19" + rc[0];
-                }
-                else
-                {
-                    dateString = "20" + rc[0];
-                }
-                Console.WriteLine(dateString);
-
-                DateTime result;
-                string format = "yyyyMMdd";
-                CultureInfo provider = CultureInfo.InvariantCulture;
-                try
-                {
-                    result = DateTime.ParseExact(dateString,
-                        format,
-                        provider
-                        );
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("zle datum v rodnom cisle, neplatne rodne cislo");
+                    Console.WriteLine("Rodne cislo nie je delitelne 11");
                     return;
                 }
-                //DateTime dt = new DateTime(Convert.ToInt32(match.Groups["year"].Value), 
-                //    Convert.ToInt32(match.Groups["month"].Value), 
-                //    Convert.ToInt32(match.Groups["day"].Value));
-
-
-                Console.WriteLine("Vyhovujuce rodne cislo");
+                Muz = MuzskeRodneCislo(s);
+                DatumNarodenia = ZistiDatumNarodenia(rc);
+                Vyhovujuce = true;
             }
             else
             {
-                Console.WriteLine("Nevyhovujuce rodne cislo");
+                Console.WriteLine("Zadane rodne cislo ma zly tvar");
+                Vyhovujuce = false;
             }
         }
 
+        DateTime ZistiDatumNarodenia(string[] rc)
+        {
+            StringBuilder dateString = new StringBuilder();
+            if ((Convert.ToInt32(rc[0][0]) - 48) > 2)
+            {
+                dateString.Append("19");
+            }
+            else
+            {
+                dateString.Append("20");
+            }
+            dateString.Append(rc[0][0]);
+            dateString.Append(rc[0][1]);
+            if (Muz)
+                dateString.Append(rc[0][2]);
+            else
+                dateString.Append((Convert.ToInt32(rc[0][2]) - 48 - 5));
+            for (int i = 3; i < 6; i++)
+                dateString.Append(rc[0][i]);
+            DateTime result = new DateTime();
+            string format = "yyyyMMdd";
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            try
+            {
+                result = DateTime.ParseExact(dateString.ToString(),
+                    format,
+                    provider
+                    );
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("zly datum v rodnom cisle, neplatne rodne cislo");
+            }
+            return result;
+        }
+
+        bool MuzskeRodneCislo(int s)
+        {
+            if (s > 1200)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        bool OverRodneCislo(string[] rc)
+        {
+            long sum = 0;
+            if (rc[1].Length == 4)
+            {
+                sum += Convert.ToInt32(rc[0]);
+                sum *= 10000;
+                sum += Convert.ToInt32(rc[1]);
+            }
+            else
+            {
+                sum += Convert.ToInt32(rc[0]);
+                sum *= 1000;
+                sum += Convert.ToInt32(rc[1]);
+            }
+
+            if (sum % 11 != 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(RodneCislo + "\n");
+            sb.Append("Je Vyhovujuce: " + Vyhovujuce + "\n");
+            if (Vyhovujuce)
+            {
+                sb.Append("Datum narodenia: " + DatumNarodenia + "\n");
+                sb.Append("Pohlavie: ");
+                if (Muz)
+                    sb.Append("muzske\n");
+                else
+                    sb.Append("zenske\n");
+            }
+            return sb.ToString();
+        }
     }
 
     class EmailCheck
     {
         public string Email { get; set; }
-        bool tuke = false;
+        bool at = false;
+        int length = 0;
+        public string University { get; private set; }
+        public bool GoodFormat { get; private set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
 
         public EmailCheck(string email)
         {
             Email = email;
-            //Console.WriteLine(email[email.Length - 7] + " " + email[email.Length - 7].Equals('t'));
-            if (email[email.Length - 7].Equals('t') && check("tuke.sk"))
+            at = CheckAt();
+            if (!at)
             {
-                tuke = true;
-            }
-            else if (email[email.Length - 7].Equals('u') && check("upjs.sk"))
-            {
-                tuke = false;
-            }
-            else
-            {
-                Console.WriteLine("wrong email");
+                Console.WriteLine("zla adresa");
                 return;
             }
+            University = GetUniversity();
+            switch (University)
+            {
+                case "tuke.sk":
+                    GetTukeEmail();
+                    break;
+                case "upjs.sk":
+                    GetUpjsEmail();
+                    break;
+            }
+        }
 
-            string meno = null;
-            string priezvisko = null;
-            int poz = 0;
+        private void GetUpjsEmail()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Email.Length - 8; i++)
+            {
+                sb.Append(Email[i]);
+            }
+            length = GetNumberLength(sb.ToString());
+            Surname = CheckUpjsSurame(sb.ToString(), length);
+            Check();
+        }
+
+        private void Check()
+        {
+            if (length > 5 || length < 2 || Surname.Length < 3 || Surname.Length > 20 || !at)
+                return;
+            GoodFormat = true;
+        }
+
+        private string CheckUpjsSurame(string p, int length)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < p.Length - length; i++)
+            {
+                if (!Char.IsLetter(p[i]))
+                    return null;
+                sb.Append(p[i]);
+            }
+            return sb.ToString();
+        }
+
+        private int GetNumberLength(string p)
+        {
+            int result = 0;
+            for (int i = 1; i < p.Length; i++)
+            {
+                if (Char.IsDigit(p[p.Length - i]))
+                {
+                    result++;
+                }
+                else
+                    return result;
+            }
+            return result;
+        }
+
+        private bool CheckName(string name)
+        {
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (!Char.IsLetter(name[i]))
+                {
+
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        private string[] Divide(string p, int j)
+        {
+            string[] result = new string[j];
+            int num = 0;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (p[i].Equals('.'))
+                {
+                    result[num] = sb.ToString();
+                    num++;
+                    sb.Clear();
+                }
+                else
+                {
+                    sb.Append(p[i]);
+                }
+            }
+            return result;
+        }
+
+        private bool CheckDot(string email, int number)
+        {
+            int sum = 0;
             for (int i = 0; i < email.Length; i++)
             {
-                Console.WriteLine(email[i] + " " + email[i].Equals('.'));
-                if (email[i].Equals('.') && tuke)
-                {
-                    if (String.IsNullOrEmpty(meno))
-                    {
-                        poz = i;
-                        StringBuilder sb = new StringBuilder();
-                        for (int j = 0; j < i; j++)
-                        {
-                            sb.Append(email[j]);
-                        }
-                        meno = sb.ToString();
-                        Console.WriteLine("meno: " + meno );
-                    }
-                    else if (String.IsNullOrEmpty(priezvisko))
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (int j = 1; j < i - poz; j++)
-                        {
-                            sb.Append(email[j + poz]);
-                        }
-                        priezvisko = sb.ToString();
-                        Console.WriteLine("priezvisko: " + priezvisko);
-                        poz = i;
-                        char next = email[i + 1];
-                        char nextOne = email[i + 2];
-                        if (Char.IsDigit(next) && nextOne.Equals('@'))
-                        {
-                            Console.WriteLine(next + " "+ nextOne);
-                            //i += 2;
-                            if (checkEnd(i+3))
-                            {
-                                Console.WriteLine("spravny email!");
-                                return;
-                            }
-                        }
-                        //i += 2;
-                    }
-                }
+                if (email[i].Equals('.'))
+                    sum++;
             }
-            Console.WriteLine("Nespravny email");
-
+            return sum == number ? true : false;
         }
 
-        bool check(string checker)
+        private void GetTukeEmail()
         {
-            //Console.WriteLine(Email + " " + checker);
-            for (int i = 0; i < 7; i++)
+            throw new NotImplementedException();
+        }
+
+        private bool CheckAt()
+        {
+            int sum = 0;
+            for (int i = 0; i < Email.Length; i++)
             {
-              //  Console.WriteLine(Email[Email.Length - 7 + i] + " " + checker[i]);
-                if (!Email[Email.Length - 7 + i].Equals(checker[i]))
-                {
-                //    Console.WriteLine("wrong email");
-                  //  Console.WriteLine(Email[Email.Length - 7 + i] + " " + checker[i]);
+                if (Email[i].Equals('@'))
+                    sum++;
+            }
+            return sum == 1 ? true : false;
+        }
+
+        string GetUniversity()
+        {
+            if (Email[Email.Length - 7].Equals('t') && CheckUniversity("@tuke.sk"))
+                return "tuke.sk";
+            else if (Email[Email.Length - 7].Equals('u') && CheckUniversity("@upjs.sk"))
+                return "upjs.sk";
+            else
+                return "unknown";
+        }
+
+        bool CheckUniversity(string university)
+        {
+            for (int i = 0; i < university.Length; i++)
+            {
+                if (!Email[Email.Length - 8 + i].Equals(university[i]))
                     return false;
-                }
             }
             return true;
         }
 
-        bool checkEnd(int i)
+        public override string ToString()
         {
-            string checker = "upjs.sk";
-            if (tuke)
-                checker = "tuke.sk";
-            for (int j = 0; j < 7; j++)
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Zadany email: " + Email + "\n");
+            sb.Append("Je format v poriadku: " + GoodFormat + "\n");
+            if (GoodFormat)
             {
-                Console.WriteLine(Email[i + j] + " " + checker[j]);
-                if (!Email[i + j].Equals(checker[j]))
-                {
-                    return false;
-                }
+                sb.Append("Zavinac v poriadku: " + at + "\n");
+                sb.Append("Univerzita: " + University + "\n");
+                sb.Append("Meno: " + Name + "\n");
+                sb.Append("Priezvisko: " + Surname + "\n");
             }
-            return true;
+            return sb.ToString();
         }
     }
 
@@ -209,15 +315,25 @@ namespace DU1405
         static void Main(string[] args)
         {
             //RodneCislo1 rc = new RodneCislo1("930225/6524");
-            //Console.WriteLine(rc.RodneCislo);
+            //Console.WriteLine(rc);
             //RodneCislo1 rc1 = new RodneCislo1("910614/8898");
-            //Console.WriteLine(rc1.RodneCislo);
+            //Console.WriteLine(rc1);
+            //RodneCislo1 rc2 = new RodneCislo1("645326/7403");
+            //Console.WriteLine(rc2);
+            //RodneCislo1 rc3 = new RodneCislo1("930225/659");
+            //Console.WriteLine(rc3);
+            //RodneCislo1 rc4 = new RodneCislo1("130225/656");
+            //Console.WriteLine(rc4);
+            //RodneCislo1 rc5 = new RodneCislo1("030229/650");
+            //Console.WriteLine(rc5);
 
-            EmailCheck ec = new EmailCheck("jaro.poru.1@tuke.sk");
-            ec = new EmailCheck("jaro.poru@tuke.sk");
-            ec = new EmailCheck("jaro.poru.1@tuke.sk");
-            ec = new EmailCheck("jaro.poru.1@tuke.sk");
-            ec = new EmailCheck("jaro.poru.1@tuke.sk");
+
+            EmailCheck ec = new EmailCheck("konecny25@upjs.sk");
+            Console.WriteLine(ec);
+            //ec = new EmailCheck("jaro.poru@tuke.sk");
+            //ec = new EmailCheck("jaro.poru@@tuke.sk");
+            //ec = new EmailCheck("jaro.poru@1@tuke.sk");
+            //ec = new EmailCheck("jaro.poru...1@tuke.sk");
 
             Console.Read();
         }
