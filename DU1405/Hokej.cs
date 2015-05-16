@@ -63,7 +63,7 @@ namespace DU1405
 
         public void Whistle()
         {
-            Console.WriteLine("Fuuuuj!");
+            Console.WriteLine("Fuuuuj! Neviete hrat!");
         }
 
         public void Goal(Team team)
