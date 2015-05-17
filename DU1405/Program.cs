@@ -146,22 +146,30 @@ namespace DU1405
 
         public EmailCheck(string email)
         {
-            Email = email;
-            at = CheckAt();
-            if (!at)
+            try
             {
-                Console.WriteLine("zla adresa");
-                return;
+
+                Email = email;
+                at = CheckAt();
+                if (!at)
+                {
+                    Console.WriteLine("zla adresa");
+                    return;
+                }
+                University = GetUniversity();
+                switch (University)
+                {
+                    case "tuke.sk":
+                        GetTukeEmail();
+                        break;
+                    case "upjs.sk":
+                        GetUpjsEmail();
+                        break;
+                }
             }
-            University = GetUniversity();
-            switch (University)
+            catch (Exception)
             {
-                case "tuke.sk":
-                    GetTukeEmail();
-                    break;
-                case "upjs.sk":
-                    GetUpjsEmail();
-                    break;
+                Console.WriteLine("daco nedobre");
             }
         }
 
@@ -174,10 +182,10 @@ namespace DU1405
             }
             length = GetNumberLength(sb.ToString());
             Surname = CheckUpjsSurame(sb.ToString(), length);
-            Check();
+            CheckUpjs();
         }
 
-        private void Check()
+        private void CheckUpjs()
         {
             if (length > 5 || length < 2 || Surname.Length < 3 || Surname.Length > 20 || !at)
                 return;
@@ -217,10 +225,8 @@ namespace DU1405
             {
                 if (!Char.IsLetter(name[i]))
                 {
-
                     return false;
                 }
-
             }
             return true;
         }
@@ -243,6 +249,7 @@ namespace DU1405
                     sb.Append(p[i]);
                 }
             }
+            result[num] = sb.ToString();
             return result;
         }
 
@@ -259,7 +266,39 @@ namespace DU1405
 
         private void GetTukeEmail()
         {
-            throw new NotImplementedException();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Email.Length - 8; i++)
+            {
+                sb.Append(Email[i]);
+            }
+            if (!CheckDot(sb.ToString(), 2))
+            {
+                return;
+            }
+            string[] names = Divide(sb.ToString(), 3);
+
+            if (CheckName(names[0]) && CheckName(names[1]) && CheckNumber(names[2]))
+            {
+                Name = names[0];
+                Surname = names[1];
+                CheckTuke();
+            }
+        }
+
+        private void CheckTuke()
+        {
+            if (Name.Length > 20 || Name.Length < 3 ||
+                Surname.Length > 20 || Surname.Length < 3 || !at)
+                return;
+            GoodFormat = true;
+        }
+
+        private bool CheckNumber(string p)
+        {
+            if (p.Length == 1 && Char.IsDigit(p[0]))
+                return true;
+            else
+                return false;
         }
 
         private bool CheckAt()
@@ -275,6 +314,8 @@ namespace DU1405
 
         string GetUniversity()
         {
+            if (Email.Length < 8)
+                return "unknown";
             if (Email[Email.Length - 7].Equals('t') && CheckUniversity("@tuke.sk"))
                 return "tuke.sk";
             else if (Email[Email.Length - 7].Equals('u') && CheckUniversity("@upjs.sk"))
@@ -309,6 +350,24 @@ namespace DU1405
         }
     }
 
+    class EmailCheckRx
+    {
+        public string Email { get; set; }
+        public EmailCheckRx(string email)
+        {
+            Console.WriteLine(email);
+            Regex rx = new Regex(@"^([a-zA-Z]{3,20}.[a-zA-Z]{3,20}.[0-9]@tuke.sk|[a-zA-Z]{3,20}[0-9]{2,5}@upjs.sk)$");
+            Match match = rx.Match(email);
+            if (match.Success)
+            {
+                Console.WriteLine("Kvalitny email");
+            }
+            else
+            {
+                Console.WriteLine("nekvalitny email");
+            }
+        }
+    }
 
     class Program
     {
@@ -327,13 +386,20 @@ namespace DU1405
             //RodneCislo1 rc5 = new RodneCislo1("030229/650");
             //Console.WriteLine(rc5);
 
-
-            EmailCheck ec = new EmailCheck("konecny25@upjs.sk");
-            Console.WriteLine(ec);
-            //ec = new EmailCheck("jaro.poru@tuke.sk");
+            //EmailCheck ec = new EmailCheck("");
+            //Console.WriteLine(ec);
+            //ec = new EmailCheck("jaro.poru.5@tuke.sk");
+            //Console.WriteLine(ec);
             //ec = new EmailCheck("jaro.poru@@tuke.sk");
+            //Console.WriteLine(ec);
             //ec = new EmailCheck("jaro.poru@1@tuke.sk");
+            //Console.WriteLine(ec);
             //ec = new EmailCheck("jaro.poru...1@tuke.sk");
+
+            //EmailCheckRx ec = new EmailCheckRx("konecny25@upjs.sk");
+            //ec = new EmailCheckRx("aaa.aaa.1@tuke.sk");
+
+
 
             Console.Read();
         }
