@@ -1,0 +1,6 @@
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\bin\Debug\Puzzle.exe.config
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\bin\Debug\Puzzle.exe
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\bin\Debug\Puzzle.pdb
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\obj\Debug\Puzzle.exe
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\obj\Debug\Puzzle.pdb
+C:\Users\Filip\Source\Repos\nPuzzle2\Puzzle\obj\Debug\Puzzle.csprojResolveAssemblyReference.cache

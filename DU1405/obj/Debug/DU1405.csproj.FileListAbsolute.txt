@@ -1,0 +1,11 @@
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\bin\Debug\DU1405.exe.config
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\bin\Debug\DU1405.exe.manifest
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\bin\Debug\DU1405.application
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\bin\Debug\DU1405.exe
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\bin\Debug\DU1405.pdb
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.csprojResolveAssemblyReference.cache
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.TrustInfo.xml
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.exe.manifest
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.application
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.exe
+C:\Users\Filip\Source\Repos\nPuzzle2\DU1405\obj\Debug\DU1405.pdb
