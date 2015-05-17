@@ -92,7 +92,7 @@ namespace Puzzle.CUI
         /// </summary>
         private void ProcessInput()
         {
-            Console.WriteLine("X EXIT\nN NEW\nMB4 MOVE");
+            Console.WriteLine("X EXIT\nN NEW\nMB4 MOVE\nG TOGGLE GENARATION DISPLAY");
             string input = Console.ReadLine();
             Regex rx = new Regex("^(?<exit>X|x)|(?<new>N|n)|(?<wasd>[wasd])|(?<gen>G|g)|(?<move>(M|m)(?<row>[a-zA-Z])(?<column>[0-9]))$");
             Match match = rx.Match(input);
