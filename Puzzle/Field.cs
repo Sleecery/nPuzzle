@@ -42,6 +42,12 @@ namespace Puzzle.Core
 
         public GreyTile GreyTile { get; private set; }
 
+        public delegate void ShiftPresentationHandler();
+
+        public event ShiftPresentationHandler DisplayPlaying;
+
+        public ShiftPresentationHandler DisplayGeneration;
+
         /// <summary>
         /// Field constructor
         /// </summary>
@@ -159,8 +165,15 @@ namespace Puzzle.Core
                 GreyTile.Col = tile.Col;
                 tile.Row = x;
                 tile.Col = y;
-                if (IsSolved())
-                    State = GameState.SOLVED;
+                if (State != GameState.GENERATION)
+                {
+                    DisplayPlaying();
+                    if (IsSolved())
+                        State = GameState.SOLVED;
+                }
+                else
+                    if (DisplayGeneration != null)
+                        DisplayGeneration();
                 return true;
             }
             else return false;
